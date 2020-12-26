@@ -81,7 +81,8 @@ class Blackjack:
             print(f"You are dealt {str(card)}")
             self._display_cards()
             if self.player.bust:
-                print("You busted :( Dealer wins\n")
+                self.losses += 1
+                print(f"You busted with a total of {self.player.total}:( Dealer wins\n")
                 return True
 
             
@@ -103,11 +104,14 @@ class Blackjack:
         dealer_has_natural = self.dealer.has_natural
 
         if player_has_natural and not dealer_has_natural:
-            print("You have a natural blacjack! You win!")
+            print("You have a natural blackjack! You win!")
+            self.wins += 1
         elif dealer_has_natural and not player_has_natural:
             print("Dealer has natural blackjack!. You lose :(")
+            self.losses += 1
         elif player_has_natural and dealer_has_natural:
             print("Both you and the dealer have a natural blackjack. Tie game")
+            self.draws += 1
         
         return player_has_natural or dealer_has_natural
     def _dealers_turn(self):
@@ -123,42 +127,89 @@ class Blackjack:
 
 
         if self.dealer.bust:
-            print("Dealer busted! You win")
+            self.wins += 1
+            print(f"Dealer busted with a total of  {self.dealer.total}! You win")
         else:
             dealer_total = self.dealer.total
             player_total = self.player.total
 
             if player_total == dealer_total:
                 print(f"Tie game with totals of {dealer_total}")
+                self.draws += 1
             elif player_total > dealer_total:
-                print(f"You win with a total of {player_total}")
+                self.wins += 1
+                print(f"You win with a total of {player_total} versus {dealer_total}")
             else:
-                print(f"Dealer wins with a total of {dealer_total}")
+                self.losses += 1
+                print(f"Dealer wins with a total of {dealer_total} versus {player_total}")
+
+    
+    def _get_yes_or_no(self):
+
+        
+        valid_choices = ('y','yes','no','n')
+        choice = None
+        while choice not in valid_choices:
+
+            choice = input("Play Again? ")
+
+
+            if choice not in valid_choices:
+                print("Please type one of 'yes','y','no', or 'n'")
+                continue
+
+        
+
+
+
+        return choice[0] == 'y'
+
+
+
+
+
+
+
+
+
+
+
 
 
 
     def _display_cards(self):
-
+        
+        print()
         print(f"Your Cards: {self.player}")
         print(f"Dealers Cards: {self.dealer}")
         print()
 
     def _play(self):
 
+        play_again = True 
+        while play_again:
+            self._deal()
 
-        self._deal()
+            self._display_cards()
 
-        self._display_cards()
+            game_over = self._check_for_naturals()
 
-        game_over = self._check_for_naturals()
+            if not game_over:
 
-        if not game_over:
+                lose = self._players_turn()
+                
+                if not lose:
+                    self._dealers_turn()
 
-            lose = self._players_turn()
             
-            if not lose:
-                self._dealers_turn()
+            play_again = self._get_yes_or_no()
+            if play_again:
+                self.dealer.reset()
+                self.player.reset()
 
+                print(f"Wins: {self.wins}\nLosses: {self.losses}\nDraws: {self.draws}\n")
+
+        print("Thank you for playing!")
 
 
 

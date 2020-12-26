@@ -7,23 +7,24 @@ class Player:
         self.cards = []
         self.possible_sums = {0}
 
-    
     def add_card(self,card):
-        
-
 
         for possible_sum in list(self.possible_sums):
             self.possible_sums.remove(possible_sum)
             for true_value in card.true_values:
                 s = possible_sum + true_value
-                if s <= 21:
-                    self.possible_sums.add(s)
+                self.possible_sums.add(s)
 
 
 
         self.cards.append(card)
 
-        
+    
+    def reset(self):
+
+        self.cards.clear()
+        self.possible_sums = {0}
+
     @property
     def total(self):
         return max(self.possible_sums)
@@ -31,7 +32,7 @@ class Player:
     
     @property
     def bust(self): 
-        return not self.possible_sums
+        return not any(value < 21 for value in self.possible_sums)
 
 
     @property
@@ -39,10 +40,9 @@ class Player:
 
         return 21 in self.possible_sums
 
-    
 
     def __str__(self):
-        return ','.join(str(card) for card in self.cards)  + '\n' + str(self.possible_sums)
+        return ','.join(str(card) for card in self.cards)  + '\nPossible Totals: ' + ','.join(map(str,sorted(self.possible_sums)))
 
 class Dealer(Player):
     
