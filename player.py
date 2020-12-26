@@ -27,12 +27,15 @@ class Player:
 
     @property
     def total(self):
-        return max(self.possible_sums)
+        return max(total for total in self.possible_sums if total <= 21)
     
+    @property
+    def bust_total(self):
+        return max(self.possible_sums)
     
     @property
     def bust(self): 
-        return not any(value < 21 for value in self.possible_sums)
+        return not any(value <= 21 for value in self.possible_sums)
 
 
     @property
@@ -44,6 +47,7 @@ class Player:
     def __str__(self):
         return ','.join(str(card) for card in self.cards)  + '\nPossible Totals: ' + ','.join(map(str,sorted(self.possible_sums)))
 
+
 class Dealer(Player):
     
     def flip_face_down_card(self):
@@ -54,5 +58,5 @@ class Dealer(Player):
     def __str__(self):
         return ','.join(str(card) for card in self.cards)
 
-
-
+    
+    

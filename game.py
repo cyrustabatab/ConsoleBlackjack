@@ -82,7 +82,7 @@ class Blackjack:
             self._display_cards()
             if self.player.bust:
                 self.losses += 1
-                print(f"You busted with a total of {self.player.total}:( Dealer wins\n")
+                print(f"You busted with a total of {self.player.bust_total}:( Dealer wins\n")
                 return True
 
             
@@ -128,7 +128,7 @@ class Blackjack:
 
         if self.dealer.bust:
             self.wins += 1
-            print(f"Dealer busted with a total of  {self.dealer.total}! You win")
+            print(f"Dealer busted with a total of  {self.dealer.bust_total}! You win")
         else:
             dealer_total = self.dealer.total
             player_total = self.player.total
