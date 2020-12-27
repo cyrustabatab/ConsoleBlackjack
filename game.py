@@ -9,11 +9,11 @@ class Blackjack:
 
     ace_values = {1,11}
 
-    def __init__(self,num_decks=4,num_players=1):
+    def __init__(self,num_decks=4,num_players=1,initial_amount=50):
         self.num_decks = num_decks
         self.deck = Deck(num_decks)
         
-        self.player = Player()
+        self.player = Player(initial_amount)
 
 
         self.dealer = Dealer()
@@ -69,7 +69,7 @@ class Blackjack:
 
 
     
-    def _players_turn(self):
+    def _players_turn(self,bet):
 
 
         choice = self._get_stand_or_hit()
@@ -81,6 +81,8 @@ class Blackjack:
             print(f"You are dealt {str(card)}")
             self._display_cards()
             if self.player.bust:
+                self.player.money -= bet
+                self.dealer.money += bet
                 self.losses += 1
                 print(f"You busted with a total of {self.player.bust_total}:( Dealer wins\n")
                 return True
@@ -105,16 +107,21 @@ class Blackjack:
 
         if player_has_natural and not dealer_has_natural:
             print("You have a natural blackjack! You win!")
+            self.player.money += bet
+            self.dealer.money -= bet
             self.wins += 1
         elif dealer_has_natural and not player_has_natural:
             print("Dealer has natural blackjack!. You lose :(")
             self.losses += 1
         elif player_has_natural and dealer_has_natural:
+            self.player.money -= bet
+            self.dealer.money += bet
             print("Both you and the dealer have a natural blackjack. Tie game")
             self.draws += 1
         
         return player_has_natural or dealer_has_natural
-    def _dealers_turn(self):
+
+    def _dealers_turn(self,bet):
 
         self.dealer.flip_face_down_card()
         print("Dealer flips second card over")
@@ -128,6 +135,8 @@ class Blackjack:
 
         if self.dealer.bust:
             self.wins += 1
+            self.player.money += bet
+            self.dealer.money -= bet
             print(f"Dealer busted with a total of  {self.dealer.bust_total}! You win")
         else:
             dealer_total = self.dealer.total
@@ -137,9 +146,13 @@ class Blackjack:
                 print(f"Tie game with totals of {dealer_total}")
                 self.draws += 1
             elif player_total > dealer_total:
+                self.player.money += bet
+                self.dealer.money -= bet
                 self.wins += 1
                 print(f"You win with a total of {player_total} versus {dealer_total}")
             else:
+                self.player.money -= bet
+                self.dealer.money += bet
                 self.losses += 1
                 print(f"Dealer wins with a total of {dealer_total} versus {player_total}")
 
@@ -173,7 +186,29 @@ class Blackjack:
 
 
 
+    
 
+    def _get_bet(self):
+
+
+        while True:
+
+            bet = input("How much money do you want to bet? ")
+
+            try:
+                bet = float(bet)
+            except:
+                print("Please type a NUMBER")
+                continue
+            
+            
+            if bet <= 0 or bet > self.player.money:
+                print("Please enter a valid bet(nonnegative and less than or equal to the money you have")
+                continue
+
+
+
+            return float(bet)
 
 
 
@@ -188,6 +223,9 @@ class Blackjack:
 
         play_again = True 
         while play_again:
+
+            print(f"Your Money: {self.player.money}\nDealer's Money: {self.dealer.money}\n")
+            bet = self._get_bet()
             self._deal()
 
             self._display_cards()
@@ -196,19 +234,25 @@ class Blackjack:
 
             if not game_over:
 
-                lose = self._players_turn()
+                lose = self._players_turn(bet)
                 
                 if not lose:
-                    self._dealers_turn()
+                    self._dealers_turn(bet)
 
             
+            if self.player.money <= 0:
+                print("You have no money left :( GAME OVER")
+                break
+
             play_again = self._get_yes_or_no()
             if play_again:
                 self.dealer.reset()
                 self.player.reset()
 
-                print(f"Wins: {self.wins}\nLosses: {self.losses}\nDraws: {self.draws}\n")
+                print(f"Wins: {self.wins}\nLosses: {self.losses}\nDraws: {self.draws}")
 
+        print(f"Wins: {self.wins}\nLosses: {self.losses}\nDraws: {self.draws}")
+        print(f"Your Money: {self.player.money}\nDealer's Money: {self.dealer.money}\n")
         print("Thank you for playing!")
 
 

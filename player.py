@@ -3,9 +3,11 @@
 class Player:
 
 
-    def __init__(self):
+    def __init__(self,money=0):
         self.cards = []
         self.possible_sums = {0}
+        self.money = money
+
 
     def add_card(self,card):
 
