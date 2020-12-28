@@ -24,11 +24,17 @@ class Deck:
         card = self.cards.pop()
         if not face_up:
             card.set_face_down()
+        
+        
+        if self.empty:
+            self._create_deck()
 
         return card
 
 
-
+    @property
+    def empty(self):
+        return not self.cards
 
 
     

@@ -248,8 +248,9 @@ class Blackjack:
             if play_again:
                 self.dealer.reset()
                 self.player.reset()
-
                 print(f"Wins: {self.wins}\nLosses: {self.losses}\nDraws: {self.draws}")
+
+
 
         print(f"Wins: {self.wins}\nLosses: {self.losses}\nDraws: {self.draws}")
         print(f"Your Money: {self.player.money}\nDealer's Money: {self.dealer.money}\n")
